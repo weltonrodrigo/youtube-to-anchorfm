@@ -14,7 +14,12 @@ const password = process.env.ANCHOR_PASSWORD;
 const UPLOAD_TIMEOUT = process.env.UPLOAD_TIMEOUT || 60 * 5 * 1000;
 
 const YT_URL = 'https://www.youtube.com/watch?v=';
-const pathToEpisodeJSON = GetEnvironmentVar('EPISODE_PATH','.') + '/episode.json';
+
+// default episode config is episode.json
+const episodeConfigFileName = GetEnvironmentVar('EPISODE_CONFIG','episode.json')
+// allow running index.js directly on local machine. just EPISODE_PATH=./
+const episodeConfigPath = GetEnvironmentVar('EPISODE_PATH','/github/workspace/')
+const pathToEpisodeJSON = `${episodeConfigPath}${episodeConfigFileName}`
 const outputFile = 'episode.mp3';
 
 // Just save as draft, to allow approval flow.
@@ -54,7 +59,7 @@ exec('sudo curl -k -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/
             console.log(`title: ${epConfJSON.title}`)
             console.log(`description: ${epConfJSON.description}`)
 
-            const youtubeDlCommand = `youtube-dl -o ${outputFile} -f bestaudio -x --force-overwrites --audio-format mp3 ${postprocessorArgsCmd} ${url}`;
+            const youtubeDlCommand = `youtube-dl -o ${outputFile} -f bestaudio -x --restrict-filenames --force-overwrites --audio-format mp3 ${postprocessorArgsCmd} ${url}`;
             console.log(`Download command: ${youtubeDlCommand}`)
 
             exec(youtubeDlCommand, (error, stdout, stderr) => {
@@ -71,7 +76,7 @@ exec('sudo curl -k -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/
 
                 const episode = JSON.parse(fs.readFileSync(pathToEpisodeJSON, 'utf-8'));
                 const jsonEpisode = JSON.stringify(episode)
-                console.log(`-- episode.json: ${jsonEpisode}`);
+                console.log(`-- Episode config file: ${jsonEpisode}`);
 
                 (async () => {
                     console.log("Launching puppeteer");
