@@ -22,4 +22,16 @@ COPY entrypoint.sh /entrypoint.sh
 RUN chmod 777 /entrypoint.sh
 ENV LC_ALL=en_US.UTF-8
 
-ENTRYPOINT [ "/entrypoint.sh" ]
+WORKDIR /
+
+RUN npm ci 
+# RUN sudo npm i puppeteer --unsafe-perm=true --allow-root
+
+RUN curl -k -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp \
+    -o /usr/local/bin/youtube-dl && chmod a+rx /usr/local/bin/youtube-dl
+
+# RUN sudo npm i puppeteer --unsafe-perm=true --allow-root
+
+CMD node /index.js
+
+COPY test.js /
