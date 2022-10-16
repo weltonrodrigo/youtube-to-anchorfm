@@ -71,7 +71,7 @@ try {
 
             (async () => {
                 console.log("Launching puppeteer");
-                const browser = await puppeteer.launch({ args: ['--no-sandbox'], headless: false });
+                const browser = await puppeteer.launch({ args: ['--no-sandbox'], headless: true });
                 const page = await browser.newPage();
 
                 // Force english
