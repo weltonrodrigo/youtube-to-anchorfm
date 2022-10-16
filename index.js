@@ -71,8 +71,13 @@ try {
 
             (async () => {
                 console.log("Launching puppeteer");
-                const browser = await puppeteer.launch({ args: ['--no-sandbox'] });
+                const browser = await puppeteer.launch({ args: ['--no-sandbox'], headless: false });
                 const page = await browser.newPage();
+
+                // Force english
+                await page.setExtraHTTPHeaders({
+                    'Accept-Language': 'en'
+                });
 
                 const navigationPromise = page.waitForNavigation();
 
@@ -97,8 +102,8 @@ try {
                 try {
                     console.log("Waiting for upload to finish");
                     await page.waitForTimeout(25 * 1000);
-                    await page.waitForXPath('//button[not(boolean(@disabled))]/div[text()="Save episode"]', { timeout: UPLOAD_TIMEOUT });
-                    const [saveButton] = await page.$x('//button[not(boolean(@disabled))]/div[text()="Save episode"]');
+                    await page.waitForXPath('//button[not(boolean(@disabled))]/*[text()="Save episode"]', { timeout: UPLOAD_TIMEOUT });
+                    const [saveButton] = await page.$x('//button[not(boolean(@disabled))]/*[text()="Save episode"]');
                     await saveButton.click();
                     await navigationPromise;
     
